@@ -108,6 +108,29 @@ function renderLoop(timestamp) {
 
   uiHands.textContent = state.hands.length;
   ctx.globalCompositeOperation = 'source-over';
+  drawWatermark();
+}
+
+// ─── Watermark ────────────────────────────────────────────────────────────────
+function drawWatermark() {
+  ctx.save();
+  ctx.globalCompositeOperation = 'source-over';
+  const accent = themes[state.theme](state.time, 1, 2);
+  ctx.font = 'bold 13px "Inter", sans-serif';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'bottom';
+  // glow pass
+  ctx.shadowBlur  = 8;
+  ctx.shadowColor = accent;
+  ctx.fillStyle   = accent;
+  ctx.globalAlpha = 0.55;
+  ctx.fillText('Bahaa Mohammed', 16, state.height - 16);
+  // crisp pass
+  ctx.shadowBlur  = 0;
+  ctx.globalAlpha = 0.35;
+  ctx.fillStyle   = '#ffffff';
+  ctx.fillText('Bahaa Mohammed', 16, state.height - 16);
+  ctx.restore();
 }
 
 // ─── Hand drawing (uses MediaPipe globals: drawConnectors, HAND_CONNECTIONS) ──
