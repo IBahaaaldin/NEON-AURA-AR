@@ -33,3 +33,11 @@ Then open `http://localhost:3000`.
 ## Stack
 
 Vanilla HTML/CSS/JS — no build step, no dependencies.
+
+## Author
+
+**Bahaa Mohammed** — Full-Stack Developer & AI-Augmented Engineer, Dubai UAE
+
+- Portfolio: [ibahaaaldin.github.io](https://ibahaaaldin.github.io)
+- GitHub: [@IBahaaaldin](https://github.com/IBahaaaldin)
+- LinkedIn: [ibahaaaldin](https://www.linkedin.com/in/ibahaaaldin)
