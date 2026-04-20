@@ -18,6 +18,7 @@ export function initAudio() {
     humOsc.connect(humGain);
     humGain.connect(audioCtx.destination);
     humOsc.start();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
   } catch (e) {
     console.error('Web Audio API failed', e);
   }
@@ -25,6 +26,7 @@ export function initAudio() {
 
 export function triggerZap() {
   if (!audioCtx) return;
+  if (audioCtx.state === 'suspended') audioCtx.resume();
 
   const osc      = audioCtx.createOscillator();
   const gainNode = audioCtx.createGain();
@@ -38,12 +40,13 @@ export function triggerZap() {
 
   osc.connect(gainNode);
   gainNode.connect(audioCtx.destination);
+  osc.onended = () => { osc.disconnect(); gainNode.disconnect(); };
   osc.start();
   osc.stop(audioCtx.currentTime + 0.15);
 }
 
 export function updateHum(hands) {
-  if (!audioCtx || !humGain) return;
+  if (!audioCtx || !humGain || !humOsc) return;
 
   if (hands.length < 2) {
     humGain.gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);

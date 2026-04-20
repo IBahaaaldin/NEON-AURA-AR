@@ -10,15 +10,15 @@ let matrixColumns = [];
 // Lazy-initialized on first drawBackground call (state.width is 0 at eval time)
 function initMatrixColumns() {
   const maxCols = Math.floor(state.width / fontSize);
+  if (matrixColumns.length === maxCols) return;
   matrixColumns = new Array(maxCols).fill(1).map(() => (Math.random() * state.height) / fontSize);
 }
-
-window.addEventListener('resize', initMatrixColumns);
 
 // ─── Particles ────────────────────────────────────────────────────────────────
 const particles = [];
 
 export function createParticles(pos, color, count = 3) {
+  if (particles.length > 800) return;
   for (let i = 0; i < count; i++) {
     particles.push({
       x: pos.x, y: pos.y,
@@ -35,6 +35,7 @@ export function createParticles(pos, color, count = 3) {
 const ripples = [];
 
 export function createShockwave(pos, color) {
+  if (ripples.length > 20) return;
   ripples.push({
     x: pos.x, y: pos.y,
     radius: 0,
@@ -46,6 +47,7 @@ export function createShockwave(pos, color) {
 
 // ─── Physics update (called each frame) ──────────────────────────────────────
 export function updatePhysics() {
+  ctx.save();
   for (let i = particles.length - 1; i >= 0; i--) {
     const p = particles[i];
     p.x  += p.vx;
@@ -78,12 +80,13 @@ export function updatePhysics() {
   }
 
   ctx.globalAlpha = 1.0;
+  ctx.restore();
 }
 
 // ─── Matrix rain background (called each frame) ───────────────────────────────
 export function drawBackground() {
   // Lazy init — state.width is set by the time renderLoop first calls this
-  if (!matrixColumns.length) initMatrixColumns();
+  initMatrixColumns();
 
   if (!state.trailMode) {
     bgCtx.globalCompositeOperation = 'destination-out';

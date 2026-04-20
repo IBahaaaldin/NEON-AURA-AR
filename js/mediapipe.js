@@ -6,6 +6,7 @@ import { updateHum } from './audio.js';
 import { getDist } from './gestures.js';
 
 let cameraInstance = null;
+let handsInstance  = null;
 
 export function initMediaPipe() {
   // Stop existing camera before restarting (e.g. facing mode change)
@@ -14,19 +15,21 @@ export function initMediaPipe() {
     cameraInstance = null;
   }
 
+  if (handsInstance) { handsInstance.close(); handsInstance = null; }
+
   // eslint-disable-next-line no-undef
-  const hands = new Hands({
+  handsInstance = new Hands({
     locateFile: file => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`,
   });
 
-  hands.setOptions({
+  handsInstance.setOptions({
     maxNumHands: 2,
     modelComplexity: 1,
     minDetectionConfidence: 0.7,
     minTrackingConfidence: 0.7,
   });
 
-  hands.onResults(results => {
+  handsInstance.onResults(results => {
     if (!results.multiHandLandmarks) {
       state.hands        = [];
       state.handVelocity = 0;
@@ -50,12 +53,14 @@ export function initMediaPipe() {
   // eslint-disable-next-line no-undef
   cameraInstance = new Camera(videoElement, {
     onFrame: async () => {
-      await hands.send({ image: videoElement });
+      await handsInstance.send({ image: videoElement });
     },
     width: 1280,
     height: 720,
     facingMode: state.facingMode || 'user',
   });
 
-  cameraInstance.start();
+  cameraInstance.start().catch(err => {
+    console.error('Camera failed to start:', err);
+  });
 }
