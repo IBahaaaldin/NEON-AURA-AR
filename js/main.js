@@ -115,21 +115,24 @@ function renderLoop(timestamp) {
 function drawWatermark() {
   ctx.save();
   ctx.globalCompositeOperation = 'source-over';
+  // Canvas is CSS-flipped (scaleX -1) — undo flip so text reads correctly
+  ctx.translate(state.width, 0);
+  ctx.scale(-1, 1);
   const accent = themes[state.theme](state.time, 1, 2);
-  ctx.font = 'bold 13px "Inter", sans-serif';
-  ctx.textAlign = 'left';
+  ctx.font = 'bold 14px "Inter", sans-serif';
+  ctx.textAlign = 'center';
   ctx.textBaseline = 'bottom';
   // glow pass
-  ctx.shadowBlur  = 8;
+  ctx.shadowBlur  = 10;
   ctx.shadowColor = accent;
   ctx.fillStyle   = accent;
-  ctx.globalAlpha = 0.55;
-  ctx.fillText('Bahaa Mohammed', 16, state.height - 16);
-  // crisp pass
+  ctx.globalAlpha = 0.6;
+  ctx.fillText('Bahaa Mohammed', state.width / 2, state.height - 20);
+  // crisp white pass
   ctx.shadowBlur  = 0;
-  ctx.globalAlpha = 0.35;
+  ctx.globalAlpha = 0.4;
   ctx.fillStyle   = '#ffffff';
-  ctx.fillText('Bahaa Mohammed', 16, state.height - 16);
+  ctx.fillText('Bahaa Mohammed', state.width / 2, state.height - 20);
   ctx.restore();
 }
 
