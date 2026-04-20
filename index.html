@@ -18,7 +18,7 @@
   <div id="startOverlay">
     <h1 style="margin-bottom:20px;font-weight:300;letter-spacing:4px">NEON AURA AR</h1>
     <p style="margin-bottom:40px;color:#888">Grant camera permissions and click to start</p>
-    <button class="start-btn" id="startBtn">Enter Experience</button>
+    <button class="start-btn" id="startBtn" type="button">Enter Experience</button>
   </div>
 
   <!-- Camera + canvas layers -->
@@ -56,14 +56,14 @@
 
   <!-- Floating action bar -->
   <div id="actionBar" class="hidden">
-    <button class="action-btn" id="screenshotBtn" title="Screenshot">📷</button>
-    <button class="action-btn" id="recordBtn" title="Record">⏺</button>
-    <button class="action-btn" id="trailBtn" title="Trail Mode">🎨</button>
-    <button class="action-btn" id="clearBtn" title="Clear Canvas">🗑</button>
+    <button class="action-btn" id="screenshotBtn" title="Screenshot" aria-label="Take screenshot">📷</button>
+    <button class="action-btn" id="recordBtn" title="Record" aria-label="Start recording">⏺</button>
+    <button class="action-btn" id="trailBtn" title="Trail Mode" aria-label="Toggle trail mode">🎨</button>
+    <button class="action-btn" id="clearBtn" title="Clear Canvas" aria-label="Clear canvas">🗑</button>
   </div>
 
   <!-- Camera toggle (mobile) -->
-  <button class="action-btn" id="cameraToggle" title="Switch Camera">🔄</button>
+  <button class="action-btn" id="cameraToggle" title="Switch Camera" aria-label="Switch camera">🔄</button>
 
   <script type="module" src="js/main.js"></script>
 </body>
