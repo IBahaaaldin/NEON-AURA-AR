@@ -22,14 +22,25 @@ export function initMediaPipe() {
     locateFile: file => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`,
   });
 
+  const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+
   handsInstance.setOptions({
     maxNumHands: 2,
-    modelComplexity: 1,
-    minDetectionConfidence: 0.7,
-    minTrackingConfidence: 0.7,
+    modelComplexity: isMobile ? 0 : 1,   // 0 = lite model, faster on mobile
+    minDetectionConfidence: 0.5,
+    minTrackingConfidence: 0.5,
   });
 
+  // Show loading status in HUD
+  const uiStatus = document.getElementById('ui-hands');
+  if (uiStatus) uiStatus.textContent = 'Loading…';
+
+  let modelReady = false;
   handsInstance.onResults(results => {
+    if (!modelReady) {
+      modelReady = true;
+      if (uiStatus) uiStatus.textContent = '0'; // hand count takes over from here
+    }
     if (!results.multiHandLandmarks) {
       state.hands        = [];
       state.handVelocity = 0;
@@ -55,12 +66,13 @@ export function initMediaPipe() {
     onFrame: async () => {
       await handsInstance.send({ image: videoElement });
     },
-    width: 1280,
-    height: 720,
+    width:  isMobile ? 640 : 1280,   // lower res on mobile = faster inference
+    height: isMobile ? 480 : 720,
     facingMode: state.facingMode || 'user',
   });
 
   cameraInstance.start().catch(err => {
     console.error('Camera failed to start:', err);
+    if (uiStatus) uiStatus.textContent = 'Cam error';
   });
 }
