@@ -58,9 +58,10 @@ export function mapToCanvas(pt) {
 export { createShockwave };
 
 // ─── Timing ───────────────────────────────────────────────────────────────────
-let lastTime         = performance.now();
+let lastTime         = 0;
 let framesThisSecond = 0;
 let lastFpsTime      = performance.now();
+let loopRunning      = false;
 
 // ─── Resize ───────────────────────────────────────────────────────────────────
 function resize() {
@@ -77,23 +78,25 @@ resize();
 // ─── Render loop ──────────────────────────────────────────────────────────────
 function renderLoop(timestamp) {
   requestAnimationFrame(renderLoop);
-
+  if (lastTime === 0) { lastTime = timestamp; }
   const dt = (timestamp - lastTime) / 1000;
   lastTime = timestamp;
   state.time += dt;
 
   framesThisSecond++;
   if (timestamp > lastFpsTime + 1000) {
-    uiFps.innerText = framesThisSecond;
+    uiFps.textContent = framesThisSecond;
     framesThisSecond = 0;
     lastFpsTime = timestamp;
   }
 
   drawBackground();
 
-  ctx.globalCompositeOperation = 'destination-out';
-  ctx.fillStyle = 'rgba(0,0,0,0.2)';
-  ctx.fillRect(0, 0, state.width, state.height);
+  if (!state.trailMode) {
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.fillStyle = 'rgba(0,0,0,0.2)';
+    ctx.fillRect(0, 0, state.width, state.height);
+  }
   ctx.globalCompositeOperation = 'screen';
 
   updatePhysics();
@@ -103,12 +106,14 @@ function renderLoop(timestamp) {
     detectGestures();
   }
 
-  uiHands.innerText = state.hands.length;
+  uiHands.textContent = state.hands.length;
   ctx.globalCompositeOperation = 'source-over';
 }
 
 // ─── Hand drawing (uses MediaPipe globals: drawConnectors, HAND_CONNECTIONS) ──
 function drawHands() {
+  if (typeof drawConnectors === 'undefined' || typeof HAND_CONNECTIONS === 'undefined') return;
+  ctx.save();
   state.hands.forEach((hand, handIndex) => {
     const glowColor = themes[state.theme](state.time, handIndex, 2);
 
@@ -133,10 +138,12 @@ function drawHands() {
   });
 
   if (state.hands.length >= 2) drawCrossHandEffects();
+  ctx.restore();
 }
 
 // ─── Cross-hand effects ───────────────────────────────────────────────────────
 function drawCrossHandEffects() {
+  ctx.save();
   const h1 = state.hands[0];
   const h2 = state.hands[1];
 
@@ -197,6 +204,7 @@ function drawCrossHandEffects() {
   ctx.lineWidth = 1;
   ctx.stroke();
   ctx.restore();
+  ctx.restore();
 }
 
 // ─── Theme switcher ───────────────────────────────────────────────────────────
@@ -238,7 +246,7 @@ document.getElementById('recordBtn').addEventListener('click', () => {
 
 document.getElementById('trailBtn').addEventListener('click', () => {
   state.trailMode = !state.trailMode;
-  uiTrail.innerText = state.trailMode ? 'ON' : 'OFF';
+  uiTrail.textContent = state.trailMode ? 'ON' : 'OFF';
   document.getElementById('trailBtn').classList.toggle('active', state.trailMode);
 });
 
@@ -262,5 +270,5 @@ document.getElementById('startBtn').addEventListener('click', () => {
   document.getElementById('actionBar').classList.remove('hidden');
   initAudio();
   initMediaPipe();
-  requestAnimationFrame(renderLoop);
+  if (!loopRunning) { loopRunning = true; requestAnimationFrame(renderLoop); }
 });
