@@ -4,7 +4,7 @@ Browser-based AR hand-tracking experience. Hold your hands in front of the camer
 
 ## Live Demo
 
-[ibahaaaldi.github.io/NEON-AURA-AR](https://ibahaaaldi.github.io/NEON-AURA-AR/)
+[ibahaaaldin.github.io/NEON-AURA-AR](https://ibahaaaldin.github.io/NEON-AURA-AR/)
 
 ## Features
 
